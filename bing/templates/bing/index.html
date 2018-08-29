@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>bing</title>
+</head>
+<body>
+<h1>主界面</h1>
+{% load static %}
+{% if imagesPath %}
+    {% for imagePath in imagesPath %}
+        <img src={% static "bing/images/a.jpg" %}
+                     alt="{{ imagePath.path }}">
+    {% endfor %}
+{% endif %}
+</body>
+</html>

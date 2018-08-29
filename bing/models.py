@@ -12,7 +12,7 @@ class Images(models.Model):
     copyrightlink = models.CharField(max_length=200)
     title = models.CharField(max_length=200)
     quiz = models.CharField(max_length=200)
-    wp = models.BooleanField
+    wp = models.BooleanField  # fixme 无法在管理界面输入
     hsh = models.CharField(max_length=200)
     drk = models.CharField(max_length=200)
     top = models.CharField(max_length=200)
