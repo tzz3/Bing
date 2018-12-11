@@ -5,12 +5,13 @@
     <title>bing</title>
 </head>
 <body>
-<h1>主界面</h1>
+<h1 align="center">BING</h1>
 {% load static %}
 {% if imagesPath %}
     {% for imagePath in imagesPath %}
-        <img src={% static "bing/images/a.jpg" %}
-                     alt="{{ imagePath.path }}">
+        <p align="center">
+            <img src={% static imagePath.path %} alt="{{ imagePath.path }}" height="540" width="960">
+        </p>
     {% endfor %}
 {% endif %}
 </body>

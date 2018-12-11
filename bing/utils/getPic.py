@@ -3,7 +3,6 @@ __author__ = "tzz6"
 
 import requests
 import json
-import pymysql
 import urllib.request
 import os
 import sqlite3
@@ -30,46 +29,52 @@ def get_pic_from_bing():
     quiz = images['quiz']
     wp = images['wp']
     hsh = images['hsh']
-    drk = images['drk']
-    top = images['top']
-    bot = images['bot']
-    hs = images['hs']
 
     imageUrl = bingUrl + url  # 图片链接
 
     # print(imageUrl)
 
-    supPath = os.path.dirname(os.path.dirname(__file__))  # 获取上级路径
-    relPath = os.path.relpath(supPath, os.getcwd())  # 相对路径
+    image_dir_path = "bing/static/bing/images"
+    rel_path = "bing/images"
 
-    path = os.path.join(relPath, 'images')
+    if not os.path.exists(image_dir_path) or os.path.isfile(image_dir_path):  # 判断文件夹是否存在
+        os.makedirs(image_dir_path)
 
-    if not os.path.exists(path) or os.path.isfile(path):  # 判断文件夹是否存在
-        os.makedirs(path)
+    save_path = os.path.join(image_dir_path, imageUrl.split('/')[-1])  # 保存文件地址
+    path = os.path.join(rel_path, imageUrl.split('/')[-1])
 
-    local = os.path.join(path, imageUrl.split('/')[-1])  # 保存文件地址
-
-    def Schedule(a, b, c):  # 下载进度
+    def schedule(a, b, c):  # 下载进度
         per = 100.0 * a * b / c
         if per > 100:
             per = 100
         print('%.2f %%' % per)
 
-    if not os.path.exists(local):  # 判断图片是否已存在
-        urllib.request.urlretrieve(imageUrl, local, Schedule)
+    # E:\Workspaces\djangoBing\bing\images
+    if not os.path.exists(save_path):  # 判断图片是否已存在
+        urllib.request.urlretrieve(imageUrl, save_path, schedule)
     else:
         print("have saved")
 
-    # 返回每个信息 在models里获取到再进行数据插入
+    conn = sqlite3.connect("../../db.sqlite3")
+    c = conn.cursor()
+
+    insert_sql = "INSERT INTO bing_images (startdate, fullstartdate, enddate, url, urlbase, copyright, copyrightlink, title, quiz, hsh, path) " \
+                 "VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')" \
+                 % (startdate, fullstartdate, enddate, url, urlbase, copyright, copyrightlink, title, quiz, hsh, path)
+    print(insert_sql)
+    r = c.execute("select * from bing_images where startdate = " + startdate)
+    if not r.fetchone():
+        c.execute(insert_sql)
+        conn.commit()
+        print(enddate, " 插入完成")
+    else:
+        print(enddate, " 已存在")
+    result = c.execute("select * from bing_images")
+    # for r in result:
+    #     for l in range(len(r)):
+    #         print(r[l], end="\n")
+    c.close()
 
 
 if __name__ == '__main__':
     get_pic_from_bing()
-    c = sqlite3.connect("../../db.sqlite3")
-    c = c.cursor()
-
-    insert_sql = "INSERT INTO bing_images (startdate, fullstartdate, enddate, url, urlbase, copyright, copyrightlink, title, quiz, hsh, drk, top, bot, hs, path) VALUES ()"
-    result = c.execute("select * from bing_images")
-    for r in result:
-        for l in range(len(r)):
-            print(r[l], end="\n")

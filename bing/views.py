@@ -4,10 +4,19 @@ from .models import Images
 from django.http import Http404
 from django.shortcuts import render
 
-
+# bing/templates/css
 def index(request):
     imagesPath = Images.objects.all()
     template = loader.get_template('bing/index.html')
+    context = {
+        'imagesPath': imagesPath
+    }
+    return HttpResponse(template.render(context, request))
+
+
+def index2(request):
+    imagesPath = Images.objects.all()
+    template = loader.get_template('index.html')
     context = {
         'imagesPath': imagesPath
     }
